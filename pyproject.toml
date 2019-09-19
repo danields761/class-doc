@@ -1,9 +1,26 @@
 [tool.poetry]
 name = "class-doc"
-version = "0.1.0"
+version = "0.1.1"
 description = "Extract attributes docstrings defined in various ways"
 authors = ["Daniel Daniels <danields761@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+repository = "https://github.com/danields761/class-doc"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet",
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.6"
