@@ -1,21 +1,15 @@
 # Class doc
 
-Small set of helpers aimed to extract class attributes documentation from a class definition, closely mimicking [sphinx-autodoc behaviour](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#directive-autoattribute) (except instance attributes defined inside `__init__` function).
+Small set of helpers aimed to extract class attributes documentation from the class definition. This stuff tries to mimic [sphinx-autodoc behaviour](https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#directive-autoattribute) as closely as possible (except instance attributes defined inside `__init__` function).
 
-The main motivation for this project is undesirable integration of really heavy [sphinx-autodoc] dependency, also *sphinx* is usually used for development purposes. As opposite *class-doc* is light, serves a specific purpose and might be easily integrated in any project.
+The main advantage of this project over [sphinx-autodoc] is that it is lightweight single-purpose dependency, while *autodoc* just a small part of really heavy project.
 
 ## Installation
 
-This package available on [PyPI]
+This package is available on [PyPI]
 
 ```bash
 pip install class-doc
-```
-
-Or using [Poetry]
-
-```bash
-poetry add class-doc
 ```
 
 ## Examples
@@ -34,6 +28,16 @@ class Foo:
 
     baz = 2
     """Docstring for class attribute Foo.baz."""
+    
+    baf = 3
+    """
+    Even
+    multiline
+    docstrings
+    handled
+    properly
+    """
+
 
 
 import class_doc
@@ -41,6 +45,7 @@ assert class_doc.extract_docs_from_cls_obj(Foo) == {
     "bar": ["Doc comment for class attribute Foo.bar.", "It can have multiple lines."],
     "flox": ["Doc comment for Foo.flox. One line only."],
     "baz": ["Docstring for class attribute Foo.baz."],
+    "baf": ["Even", "multiline", "docstrings", "handled", "properly"]
 }
 ```
 

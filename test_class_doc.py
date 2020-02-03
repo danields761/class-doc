@@ -51,7 +51,9 @@ class Foo:
           3  #: bai descr
 
     attr_docstring = 1
-    """attr_docstring descr"""
+    """
+    attr_docstring descr
+    """
 
     attr_docstring_after_line = 2
 
@@ -80,6 +82,10 @@ def get_foo_attr(name):
                 return node
 
     raise ValueError(f'Foo doesnt defines such name: {name}')
+
+
+def test_toke_eater():
+    pass
 
 
 @mark.parametrize(
@@ -148,3 +154,42 @@ def test_attr_docstring_extraction():
 )
 def test_neigborhood_lines_counter(first, second, res):
     assert _count_neighbor_newlines(FOO_LINES, first, second) == res
+
+
+def inner_func():
+    class Inner:
+        bar = 1
+        """
+        bar docs
+        """
+
+    return Inner
+
+
+class OuterCls:
+    class Inner2:
+        foo = 1
+        """
+        foo docs
+        """
+
+
+@mark.parametrize(
+    'cls, result',
+    [
+        (
+            OuterCls.Inner2,
+            {
+                'foo': ['foo docs']
+            }
+        ),
+        (
+            inner_func(),
+            {
+                'bar': ['bar docs']
+            }
+        ),
+    ]
+)
+def test_docs_extracting_for_nested_cls(cls, result):
+    assert extract_docs_from_cls_obj(cls) == result

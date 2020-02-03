@@ -4,14 +4,10 @@ cache: pip
 python:
   - "3.6"
   - "3.7"
-  - "3.8-dev"
+  - "3.8"
 install:
   - pip install poetry
   - poetry install
 
 script:
   - poetry run pytest .
-
-jobs:
-  allow_failures:
-  - python: '3.8-dev'

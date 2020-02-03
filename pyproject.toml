@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "class-doc"
-version = "0.1.1"
+version = "0.1.2"
 description = "Extract attributes docstrings defined in various ways"
 authors = ["Daniel Daniels <danields761@gmail.com>"]
 license = "MIT"

@@ -2,6 +2,7 @@ import ast
 import inspect
 import itertools
 import string
+import textwrap
 import tokenize
 from typing import Dict, List, Optional, Union, Iterator, Any
 
@@ -19,12 +20,18 @@ def _tokens_peekable_iter(lines: List[str]) -> mitertools.peekable:
     return mitertools.peekable(tokenize.generate_tokens(lambda: next(lines_iter)))
 
 
+def _get_first_lineno(node: ast.AST) -> int:
+    if isinstance(node, ast.Expr) and isinstance(node.value, ast.Str):
+        return node.lineno - node.value.s.count('\n')
+    return node.lineno
+
+
 def _take_until_node(
     tokens: Iterator[tokenize.TokenInfo], node: ast.AST
 ) -> Iterator[tokenize.TokenInfo]:
     for tok in tokens:
         yield tok
-        if tok.start[0] >= node.lineno and tok.start[1] >= node.col_offset:
+        if tok.start[0] >= _get_first_lineno(node) and tok.start[1] >= node.col_offset:
             break
 
 
@@ -50,7 +57,7 @@ def _count_neighbor_newlines(lines: List[str], first: ast.AST, second: ast.AST) 
     """
     tokens_iter = _tokens_peekable_iter(lines)
     mitertools.consume(_take_until_node(tokens_iter, first))
-    return (second.lineno - first.lineno) - sum(
+    return (_get_first_lineno(second) - _get_first_lineno(first)) - sum(
         1
         for tok in _take_until_node(tokens_iter, second)
         if tok.type == tokenize.NEWLINE
@@ -199,8 +206,13 @@ def extract_docs_from_cls_obj(cls: Any):
         definition
     :return: same as :py:func:`extract_docs`
     """
-    lines = inspect.getsourcelines(cls)[0]
-    tree = ast.parse(''.join(lines)).body[0]
+    lines, _ = inspect.getsourcelines(cls)
+
+    # dedent the text for a inner classes declarations
+    text = textwrap.dedent(''.join(lines))
+    lines = text.splitlines(keepends=True)
+
+    tree = ast.parse(text).body[0]
     if not isinstance(tree, ast.ClassDef):
         raise TypeError(f'Expecting "{ast.ClassDef.__name__}", but "{cls}" is received')
 
