@@ -3,8 +3,26 @@ import inspect
 
 from pytest import mark
 
-from class_doc import extract_node_comments, extract_docs, extract_all_nodes_comments, \
-    _count_neighbor_newlines, extract_docs_from_cls_obj
+from class_doc import (
+    extract_node_comments,
+    extract_docs,
+    extract_all_nodes_comments,
+    extract_docs_from_cls_obj,
+    _test_advanced_ast_presence,
+)
+
+
+@mark.xfail
+def test_python_after_38():
+    """Reports whether current python version is 3.8 or bigger"""
+    import sys
+    assert sys.version_info >= (3, 8)
+
+
+@mark.xfail
+def test_advance_ast_avaliable():
+    """Reports whether advanced AST available or not"""
+    assert _test_advanced_ast_presence()
 
 
 def cls_func(kwarg=None):
@@ -84,10 +102,6 @@ def get_foo_attr(name):
     raise ValueError(f'Foo doesnt defines such name: {name}')
 
 
-def test_toke_eater():
-    pass
-
-
 @mark.parametrize(
     'node, result',
     [
@@ -118,10 +132,14 @@ def test_all_comments_extraction():
         'bah': ['bah descr'],
         'bat': ['bat descr'],
         'bai': ['bai descr'],
-        'c_same_line_multi': ['both targets comment (c_same_line_multi, c_same_line_target)'],
-        'c_same_line_target': ['both targets comment (c_same_line_multi, c_same_line_target)'],
+        'c_same_line_multi': [
+            'both targets comment (c_same_line_multi, c_same_line_target)'
+        ],
+        'c_same_line_target': [
+            'both targets comment (c_same_line_multi, c_same_line_target)'
+        ],
         'c_multi': ['both targets comment (c_multi, c_target)'],
-        'c_target': ['both targets comment (c_multi, c_target)']
+        'c_target': ['both targets comment (c_multi, c_target)'],
     }
 
 
@@ -150,10 +168,12 @@ def test_attr_docstring_extraction():
     [
         (FOO_CLASSDEF.body[11], FOO_CLASSDEF.body[12], 0),
         (FOO_CLASSDEF.body[13], FOO_CLASSDEF.body[14], 1),
-    ]
+    ],
 )
 def test_neigborhood_lines_counter(first, second, res):
-    assert _count_neighbor_newlines(FOO_LINES, first, second) == res
+    from class_doc import _ast_tools
+
+    assert _ast_tools.count_neighbor_newlines(FOO_LINES, first, second) == res
 
 
 def inner_func():
